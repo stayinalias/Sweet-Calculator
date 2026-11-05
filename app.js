@@ -1,10 +1,10 @@
 const localGamesDatabase = [
-    { id: "g1", title: "Iron Snout", plays: "1.2M Plays", tag: "action", popular: true, poster: "https://unsplash.com", url: "https://gamedistribution.com" },
-    { id: "g2", title: "Final Ninja Zero", plays: "285 Plays", tag: "action", popular: false, poster: "https://unsplash.com", url: "https://gamedistribution.com" },
-    { id: "g3", title: "Cubefield", plays: "207 Plays", tag: "popular", popular: true, poster: "https://unsplash.com", url: "https://crazygames.com" },
-    { id: "g4", title: "Magic Battleground", plays: "3.9K Plays", tag: "action", popular: true, poster: "https://unsplash.com", url: "https://gamedistribution.com" },
-    { id: "g5", title: "Slither.io", plays: "4.5M Plays", tag: "io", popular: true, poster: "https://unsplash.com", url: "https://slither.io" },
-    { id: "g6", title: "Paper.io 2", plays: "890K Plays", tag: "io", popular: false, poster: "https://unsplash.com", url: "https://paper-io.com" }
+    { id: "g1", title: "Iron Snout", plays: "1.2M Plays", tag: "action", popular: true, icon: "⚔️", url: "https://gamedistribution.com" },
+    { id: "g2", title: "Final Ninja Zero", plays: "285K Plays", tag: "action", popular: false, icon: "🥷", url: "https://gamedistribution.com" },
+    { id: "g3", title: "Cubefield", plays: "2M Plays", tag: "popular", popular: true, icon: "🧊", url: "https://crazygames.com" },
+    { id: "g4", title: "Magic Battleground", plays: "3.9K Plays", tag: "action", popular: true, icon: "🪄", url: "https://gamedistribution.com" },
+    { id: "g5", title: "Slither.io", plays: "4.5M Plays", tag: "io", popular: true, icon: "🐍", url: "https://slither.io" },
+    { id: "g6", title: "Paper.io 2", plays: "890K Plays", tag: "io", popular: false, icon: "📄", url: "https://paper-io.com" }
 ];
 
 let activeFilterTag = "all";
@@ -13,17 +13,19 @@ let isHudSettingsPanelOpen = false;
 
 /* --- CANVAS ENGINE MOUSE TRACKING SYSTEM --- */
 const canvas = document.getElementById('bg-particle-canvas');
-const ctx = canvas.getContext('2d');
+const ctx = canvas ? canvas.getContext('2d') : null;
 let activeCanvasEffect = "neon";
 let mousePosition = { x: null, y: null };
 let particleArray = [];
 
-window.addEventListener('resize', resizeBackgroundTrackingCanvas);
-window.addEventListener('mousemove', (e) => {
-    mousePosition.x = e.clientX;
-    mousePosition.y = e.clientY;
-    if (activeCanvasEffect !== "none") generateTrackingParticleNode();
-});
+if (canvas) {
+    window.addEventListener('resize', resizeBackgroundTrackingCanvas);
+    window.addEventListener('mousemove', (e) => {
+        mousePosition.x = e.clientX;
+        mousePosition.y = e.clientY;
+        if (activeCanvasEffect !== "none") generateTrackingParticleNode();
+    });
+}
 
 function resizeBackgroundTrackingCanvas() {
     if (!canvas) return;
@@ -52,6 +54,7 @@ class TrackingParticle {
         this.alpha -= 0.015;
     }
     draw() {
+        if (!ctx) return;
         ctx.save(); ctx.globalAlpha = this.alpha; ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fillStyle = this.color;
         if (activeCanvasEffect === "neon") { ctx.shadowBlur = 10; ctx.shadowColor = this.color; }
@@ -66,7 +69,7 @@ function generateTrackingParticleNode() {
 }
 
 function loopBackgroundAnimations() {
-    if (!canvas || canvas.style.display === "none") return;
+    if (!canvas || canvas.style.display === "none" || !ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < particleArray.length; i++) {
         particleArray[i].update(); particleArray[i].draw();
@@ -82,8 +85,6 @@ function executeCalculatorMath() { if (gatekeeperCodeModeActive) return; const d
 
 function pressCalculatorNumber(digitValue) {
     const display = document.getElementById('calc-display-node');
-    
-    // Completely clears preset alerts and allows string chaining of zeros
     if (display.value === "0" || display.value === "CODE" || display.value === "INCORRECT") {
         display.value = digitValue;
     } else {
@@ -168,6 +169,8 @@ function reassignCorePlatformChroma(bgChroma, accentChroma) {
 
 function engageInstantPanicCalculatorLock() {
     isHudSettingsPanelOpen = false;
+    unloadActiveGameSession();
+    closeActiveUtilityAppSession();
     document.getElementById('hud-settings-panel').className = "settings-panel-hidden";
     document.getElementById('unlocked-gaming-hub').className = "view-hidden";
     document.getElementById('bg-particle-canvas').style.display = "none";
@@ -179,20 +182,101 @@ function engageInstantPanicCalculatorLock() {
 }
 
 /* --- SECTION D: GAME DISPLAY --- */
-function renderGamesCatalogDisplay(d) {
-    const m = document.getElementById('catalog-grid-mount'); if (!m) return; m.innerHTML = "";
-    d.forEach(game => {
-        const c = document.createElement('div'); c.className = "game-card";
-        c.setAttribute('onclick', `launchSelectedGame('${game.url}')`);
-        let p = game.popular ? `<span class="card-badge-popular">Popular</span>` : "";
-        c.innerHTML = `${p}<img src="${game.poster}" alt="${game.title}"><h4>${game.title}</h4><p>🎮 ${game.plays}</p>`;
-        m.appendChild(c);
+function renderGamesCatalogDisplay(dataset) {
+    const mount = document.getElementById('catalog-grid-mount');
+    if (!mount) return;
+    mount.innerHTML = "";
+    dataset.forEach(game => {
+        const card = document.createElement('div');
+        card.className = "game-card";
+        card.setAttribute('onclick', `launchSelectedGame('${game.url}', '${game.title}')`);
+        let popular = game.popular ? `<span class="card-badge-popular">Popular</span>` : "";
+        
+        card.innerHTML = `
+            ${popular}
+            <div class="media-placeholder-art">
+                <span class="fallback-icon">${game.icon}</span>
+            </div>
+            <h4>${game.title}</h4>
+            <p>🎮 ${game.plays}</p>
+        `;
+        mount.appendChild(card);
     });
 }
-function filterGameCatalog(t) { switchToGameCatalogView(); activeFilterTag = t; document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active')); const targetedBtn = document.getElementById(`tab-${t}`); if (targetedBtn) targetedBtn.classList.add('active'); const h = document.getElementById('catalog-title-header'); if (h) h.innerText = t === 'all' ? 'All Games' : `${t.toUpperCase()} Games`; if (t === 'all') { renderGamesCatalogDisplay(localGamesDatabase); } else { renderGamesCatalogDisplay(localGamesDatabase.filter(g => g.tag === t || (t === 'popular' && g.popular))); } }
-function switchToGameCatalogView() { document.getElementById('stealth-unblocker-view-panel').className = "view-hidden"; document.getElementById('game-catalog-view-panel').className = "view-visible"; document.getElementById('promo-banner-node').style.display = "flex"; document.getElementById('navbar-search-container').style.display = "block"; }
-function switchToProxyUnblockerView() { document.getElementById('game-catalog-view-panel').className = "view-hidden"; document.getElementById('promo-banner-node').style.display = "none"; document.getElementById('navbar-search-container').style.display = "none"; document.getElementById('stealth-unblocker-view-panel').className = "view-visible"; }
-function executeLiveGameSearch() { const q = document.getElementById('game-search-input').value.trim().toLowerCase(); let p = localGamesDatabase; if (activeFilterTag !== 'all') { p = localGamesDatabase.filter(g => g.tag === activeFilterTag || (activeFilterTag === 'popular' && g.popular)); } renderGamesCatalogDisplay(p.filter(g => g.title.toLowerCase().includes(q))); }
-function launchRandomGame() { launchSelectedGame(localGamesDatabase[Math.floor(Math.random() * localGamesDatabase.length)].url); }
-function launchSelectedGame(u) { const m = document.getElementById('game-player-modal'); const i = document.getElementById('game-frame-target'); if (m && i) { document.body.classList.remove('wavy-active'); i.src = u; m.className = "modal-visible"; } }
-function closeActiveGameSession() { const m = document.getElementById('game-player-modal'); const i = document.getElementById('game-frame-target'); if (m && i) { i.src = ""; m.className = "modal-hidden"; if (document.getElementById('wavy-effect-routing').value === "on") document.body.classList.add('wavy-active'); } }
+
+function filterGameCatalog(tag) {
+    switchToGameCatalogView();
+    activeFilterTag = tag;
+    document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+    const targetedBtn = document.getElementById(`tab-${tag}`);
+    if (targetedBtn) targetedBtn.classList.add('active');
+    const h = document.getElementById('catalog-title-header');
+    if (h) h.innerText = tag === 'all' ? 'All Games' : `${tag.toUpperCase()} Games`;
+    if (tag === 'all') {
+        renderGamesCatalogDisplay(localGamesDatabase);
+    } else {
+        renderGamesCatalogDisplay(localGamesDatabase.filter(g => g.tag === tag || (tag === 'popular' && g.popular)));
+    }
+}
+function launchSelectedGame(embedUrl, gameTitle) {
+document.getElementById('game-catalog-view-panel').className = "view-hidden";
+document.getElementById('stealth-unblocker-view-panel').className = "view-hidden";
+document.getElementById('inline-fullscreen-game-container').className = "view-visible";
+document.body.classList.remove('wavy-active');
+document.getElementById('active-playing-game-title').innerText = gameTitle;
+document.getElementById('inline-game-frame-target').src = embedUrl;
+}
+function unloadActiveGameSession() {
+document.getElementById('inline-fullscreen-game-container').className = "view-hidden";
+document.getElementById('inline-game-frame-target').src = "about:blank";
+switchToGameCatalogView();
+}
+function switchToGameCatalogView() {
+document.getElementById('inline-fullscreen-game-container').className = "view-hidden";
+document.getElementById('stealth-unblocker-view-panel').className = "view-hidden";
+document.getElementById('game-catalog-view-panel').className = "view-visible";
+document.getElementById('promo-banner-node').style.display = "flex";
+document.getElementById('navbar-search-container').style.display = "block";
+if (document.getElementById('wavy-effect-routing').value === "on") document.body.classList.add('wavy-active');
+}
+function switchToProxyUnblockerView() {
+unloadActiveGameSession();
+document.getElementById('game-catalog-view-panel').className = "view-hidden";
+document.getElementById('promo-banner-node').style.display = "none";
+document.getElementById('navbar-search-container').style.display = "none";
+document.getElementById('stealth-unblocker-view-panel').className = "view-visible";
+}
+/* --- STEALTH OFFLINE UTILITY HANDLERS --- */
+function launchOfflineUtilityApp(appType) {
+const container = document.getElementById('utility-app-canvas-container');
+const title = document.getElementById('active-utility-app-title');
+const frame = document.getElementById('utility-app-frame-target');
+container.className = "view-visible";
+if (appType === 'notepad') {
+title.innerText = "Stealth Note Scratchpad";
+frame.src = "data:text/html,";
+} else if (appType === 'canvas') {
+title.innerText = "Retro Paint Canvas";
+frame.src = "data:text/html,const canvas=document.getElementById('c');const ctx=canvas.getContext('2d');let painting=false;function start(e){painting=true;draw(e)}function end(){painting=false;ctx.beginPath()}function draw(e){if(!painting)return;ctx.lineWidth=5;ctx.lineCap='round';ctx.strokeStyle='%23ef4444';ctx.lineTo(e.clientX-canvas.offsetLeft,e.clientY-canvas.offsetTop);ctx.stroke();ctx.beginPath();ctx.moveTo(e.clientX-canvas.offsetLeft,e.clientY-canvas.offsetTop)}canvas.addEventListener('mousedown',start);canvas.addEventListener('mouseup',end);canvas.addEventListener('mousemove',draw);";
+} else if (appType === 'portal') {
+title.innerText = "Static Frame Viewer";
+let target = prompt("Enter full website link to test inside container layer:", "https://example.com");
+if (target) frame.src = target;
+}
+}
+function closeActiveUtilityAppSession() {
+document.getElementById('utility-app-canvas-container').className = "view-hidden";
+document.getElementById('utility-app-frame-target').src = "about:blank";
+}
+function executeLiveGameSearch() {
+const q = document.getElementById('game-search-input').value.trim().toLowerCase();
+let p = localGamesDatabase;
+if (activeFilterTag !== 'all') {
+p = localGamesDatabase.filter(g => g.tag === activeFilterTag || (activeFilterTag === 'popular' && g.popular));
+}
+renderGamesCatalogDisplay(p.filter(g => g.title.toLowerCase().includes(q)));
+}
+function launchRandomGame() {
+const game = localGamesDatabase[Math.floor(Math.random() * localGamesDatabase.length)];
+launchSelectedGame(game.url, game.title);
+}
