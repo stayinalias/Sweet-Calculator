@@ -106,7 +106,7 @@ function submitPasscodeVerification() {
         showToastNotificationPopUp("Activate CD Mode before entering passcodes.", false);
         return;
     }
-    if (display.value === "0001") {
+    if (display.value === "2002") {
         showToastNotificationPopUp("Correct Code! Unlocking dashboard...", true);
         setTimeout(unlockPlatformDashboardEcosystem, 800);
     } else {
