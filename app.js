@@ -74,17 +74,20 @@ function loopBackgroundAnimations() {
     requestAnimationFrame(loopBackgroundAnimations);
 }
 
-/* --- SECTION B: STEALTH CALCULATOR ENGINE --- */
+/* --- SECTION B: STEALTH CALCULATOR ENGINE (FIXED APP BUFFER) --- */
 function clearCalculatorScreen() { document.getElementById('calc-display-node').value = "0"; }
 function pressCalculatorSymbol(symbol) { if (gatekeeperCodeModeActive) return; document.getElementById('calc-display-node').value += symbol; }
 function executeCalculatorMath() { if (gatekeeperCodeModeActive) return; const d = document.getElementById('calc-display-node'); try { d.value = Function('"use strict";return (' + d.value + ')')(); } catch (e) { d.value = "Error"; } }
 
 function pressCalculatorNumber(digitValue) {
     const display = document.getElementById('calc-display-node');
-    if (display.value === "0" || gatekeeperCodeModeActive) {
-        display.value = (gatekeeperCodeModeActive && display.value === "CODE") ? digitValue : digitValue;
-    } else { display.value += digitValue; }
-    if (gatekeeperCodeModeActive && display.value === "0001") unlockPlatformDashboardEcosystem();
+    
+    // Fixed: Properly clear screen placeholder strings so multi-character values chain accurately
+    if (display.value === "0" || display.value === "CODE" || display.value === "INCORRECT") {
+        display.value = digitValue;
+    } else {
+        display.value += digitValue;
+    }
 }
 
 function toggleCodeEntryMode() {
@@ -96,6 +99,38 @@ function toggleCodeEntryMode() {
     } else {
         mode.innerText = "Standard Mode"; mode.className = "mode-text-stealth"; d.value = "0";
     }
+}
+
+// Custom Passcode Handler firing validation when the "ENT" key is tapped
+function submitPasscodeVerification() {
+    const display = document.getElementById('calc-display-node');
+    
+    if (!gatekeeperCodeModeActive) {
+        alert("Activate Code Mode (CD button) before submitting passcode combinations.");
+        return;
+    }
+
+    if (display.value === "0001") {
+        showToastNotificationPopUp("Correct Code! Unlocking Platform Dashboard Engine...", true);
+        setTimeout(unlockPlatformDashboardEcosystem, 1000);
+    } else {
+        showToastNotificationPopUp("Incorrect Code Entry. Access Request Blocked.", false);
+        display.value = "INCORRECT";
+    }
+}
+
+// Renders the smooth automated top pop-up notification window bars
+function showToastNotificationPopUp(messageText, isSuccessStyle) {
+    const toast = document.getElementById('passcode-toast-notification');
+    if (!toast) return;
+
+    toast.innerText = messageText;
+    toast.className = "toast-visible " + (isSuccessStyle ? "toast-success" : "toast-error");
+
+    // Automatically remove notice frame after 3 seconds
+    setTimeout(() => {
+        toast.className = "toast-hidden";
+    }, 3000);
 }
 
 function unlockPlatformDashboardEcosystem() {
@@ -168,42 +203,10 @@ function renderGamesCatalogDisplay(d) {
     });
 }
 
-function filterGameCatalog(t) { 
-    switchToGameCatalogView(); 
-    activeFilterTag = t; 
-    document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active')); 
-    const targetedBtn = document.getElementById(`tab-${t}`); 
-    if (targetedBtn) targetedBtn.classList.add('active'); 
-    const h = document.getElementById('catalog-title-header'); 
-    if (h) h.innerText = t === 'all' ? 'All Games' : `${t.toUpperCase()} Games`; 
-    if (t === 'all') { 
-        renderGamesCatalogDisplay(localGamesDatabase); 
-    } else { 
-        renderGamesCatalogDisplay(localGamesDatabase.filter(g => g.tag === t || (t === 'popular' && g.popular))); 
-    } 
-}
-
-function switchToGameCatalogView() { 
-    document.getElementById('stealth-unblocker-view-panel').className = "view-hidden"; 
-    document.getElementById('game-catalog-view-panel').className = "view-visible"; 
-    document.getElementById('promo-banner-node').style.display = "flex"; 
-    document.getElementById('navbar-search-container').style.display = "block"; 
-}
-
-function switchToProxyUnblockerView() { 
-    document.getElementById('game-catalog-view-panel').className = "view-hidden"; 
-    document.getElementById('promo-banner-node').style.display = "none";
-    document.getElementById('navbar-search-container').style.display = "none";
-    document.getElementById('stealth-unblocker-view-panel').className = "view-visible";
-}
-function executeLiveGameSearch() {
-const q = document.getElementById('game-search-input').value.trim().toLowerCase();
-let p = localGamesDatabase;
-if (activeFilterTag !== 'all') {
-p = localGamesDatabase.filter(g => g.tag === activeFilterTag || (activeFilterTag === 'popular' && g.popular));
-}
-renderGamesCatalogDisplay(p.filter(g => g.title.toLowerCase().includes(q)));
-}
+function filterGameCatalog(t) { switchToGameCatalogView(); activeFilterTag = t; document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active')); const targetedBtn = document.getElementById(tab-${t}); if (targetedBtn) targetedBtn.classList.add('active'); const h = document.getElementById('catalog-title-header'); if (h) h.innerText = t === 'all' ? 'All Games' : ${t.toUpperCase()} Games; if (t === 'all') { renderGamesCatalogDisplay(localGamesDatabase); } else { renderGamesCatalogDisplay(localGamesDatabase.filter(g => g.tag === t || (t === 'popular' && g.popular))); } }
+function switchToGameCatalogView() { document.getElementById('stealth-unblocker-view-panel').className = "view-hidden"; document.getElementById('game-catalog-view-panel').className = "view-visible"; document.getElementById('promo-banner-node').style.display = "flex"; document.getElementById('navbar-search-container').style.display = "block"; }
+function switchToProxyUnblockerView() { document.getElementById('game-catalog-view-panel').className = "view-hidden"; document.getElementById('promo-banner-node').style.display = "none"; document.getElementById('navbar-search-container').style.display = "none"; document.getElementById('stealth-unblocker-view-panel').className = "view-visible"; }
+function executeLiveGameSearch() { const q = document.getElementById('game-search-input').value.trim().toLowerCase(); let p = localGamesDatabase; if (activeFilterTag !== 'all') { p = localGamesDatabase.filter(g => g.tag === activeFilterTag || (activeFilterTag === 'popular' && g.popular)); } renderGamesCatalogDisplay(p.filter(g => g.title.toLowerCase().includes(q))); }
 function launchRandomGame() { launchSelectedGame(localGamesDatabase[Math.floor(Math.random() * localGamesDatabase.length)].url); }
 function launchSelectedGame(u) { const m = document.getElementById('game-player-modal'); const i = document.getElementById('game-frame-target'); if (m && i) { document.body.classList.remove('wavy-active'); i.src = u; m.className = "modal-visible"; } }
 function closeActiveGameSession() { const m = document.getElementById('game-player-modal'); const i = document.getElementById('game-frame-target'); if (m && i) { i.src = ""; m.className = "modal-hidden"; if (document.getElementById('wavy-effect-routing').value === "on") document.body.classList.add('wavy-active'); } }
