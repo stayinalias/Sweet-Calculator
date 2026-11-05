@@ -82,10 +82,12 @@ function executeCalculatorMath() { if (gatekeeperCodeModeActive) return; const d
 
 function pressCalculatorNumber(digitValue) {
     const display = document.getElementById('calc-display-node');
+    
+    // Completely clears preset alerts and allows string chaining of zeros
     if (display.value === "0" || display.value === "CODE" || display.value === "INCORRECT") {
         display.value = digitValue;
     } else {
-        display.value += digitValue;
+        display.value = display.value + digitValue;
     }
 }
 
