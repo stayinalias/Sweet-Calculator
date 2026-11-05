@@ -76,6 +76,7 @@ display.value = (gatekeeperCodeModeActive && display.value === "CODE") ? digitVa
 } else { display.value += digitValue; }
 if (gatekeeperCodeModeActive && display.value === "0001") unlockPlatformDashboardEcosystem();
 }
+// Controls shifting into authorization mode
 function toggleCodeEntryMode() {
 gatekeeperCodeModeActive = !gatekeeperCodeModeActive;
 const mode = document.getElementById('calc-mode-indicator');
@@ -144,7 +145,7 @@ m.appendChild(c);
 }
 function filterGameCatalog(t) { switchToGameCatalogView(); activeFilterTag = t; document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active')); const targetedBtn = document.getElementById(tab-${t}); if (targetedBtn) targetedBtn.classList.add('active'); const h = document.getElementById('catalog-title-header'); if (h) h.innerText = t === 'all' ? 'All Games' : ${t.toUpperCase()} Games; if (t === 'all') { renderGamesCatalogDisplay(localGamesDatabase); } else { renderGamesCatalogDisplay(localGamesDatabase.filter(g => g.tag === t || (t === 'popular' && g.popular))); } }
 function switchToGameCatalogView() { document.getElementById('stealth-unblocker-view-panel').className = "view-hidden"; document.getElementById('game-catalog-view-panel').className = "view-visible"; document.getElementById('promo-banner-node').style.display = "flex"; document.getElementById('navbar-search-container').style.display = "block"; }
-switchToProxyUnblockerView() { document.getElementById('game-catalog-view-panel').className = "view-hidden"; document.getElementById('promo-banner-node').style.display = "none"; document.getElementById('navbar-search-container').style.display = "none"; document.getElementById('stealth-unblocker-view-panel').className = "view-visible"; }
+function switchToProxyUnblockerView() { document.getElementById('game-catalog-view-panel').className = "view-hidden"; document.getElementById('promo-banner-node').style.display = "none"; document.getElementById('navbar-search-container').style.display = "none"; document.getElementById('stealth-unblocker-view-panel').className = "view-visible"; }
 function executeLiveGameSearch() { const q = document.getElementById('game-search-input').value.trim().toLowerCase(); let p = localGamesDatabase; if (activeFilterTag !== 'all') { p = localGamesDatabase.filter(g => g.tag === activeFilterTag || (activeFilterTag === 'popular' && g.popular)); } renderGamesCatalogDisplay(p.filter(g => g.title.toLowerCase().includes(q))); }
 function launchRandomGame() { launchSelectedGame(localGamesDatabase[Math.floor(Math.random() * localGamesDatabase.length)].url); }
 function launchSelectedGame(u) { const m = document.getElementById('game-player-modal'); const i = document.getElementById('game-frame-target'); if (m && i) { document.body.classList.remove('wavy-active'); i.src = u; m.className = "modal-visible"; } }
