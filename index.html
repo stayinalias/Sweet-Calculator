@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="browser-tab-title">Sweet Calculator</title>
+    <link id="browser-tab-icon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://w3.org viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Dynamic Mouse Tracking Canvas Layer -->
+    <canvas id="bg-particle-canvas"></canvas>
+    <div class="custom-theme-overlay-solid" id="theme-color-backdrop"></div>
+
+    <!-- IDENTITY 1: Stealth Calculator Mask Overlay -->
+    <div id="stealth-calculator-mask" class="calculator-overlay-visible">
+        <div class="calculator-chassis animate__animated animate__fadeIn">
+            <div class="calculator-screen">
+                <div id="calc-mode-indicator" class="mode-text-stealth">Standard Mode</div>
+                <input type="text" id="calc-display-node" value="0" readonly>
+            </div>
+            
+            <div class="calculator-button-grid">
+                <button class="calc-btn utility" onclick="clearCalculatorScreen()">C</button>
+                <button class="calc-btn utility" onclick="pressCalculatorSymbol('/')">/</button>
+                <button class="calc-btn utility" onclick="pressCalculatorSymbol('*')">*</button>
+                <button class="calc-btn gatekeeper-trigger" onclick="toggleCodeEntryMode()">CD</button>
+                
+                <button class="calc-btn digit" onclick="pressCalculatorNumber('7')">7</button>
+                <button class="calc-btn digit" onclick="pressCalculatorNumber('8')">8</button>
+                <button class="calc-btn digit" onclick="pressCalculatorNumber('9')">9</button>
+                <button class="calc-btn utility" onclick="pressCalculatorSymbol('-')">-</button>
+                
+                <button class="calc-btn digit" onclick="pressCalculatorNumber('4')">4</button>
+                <button class="calc-btn digit" onclick="pressCalculatorNumber('5')">5</button>
+                <button class="calc-btn digit" onclick="pressCalculatorNumber('6')">6</button>
+                <button class="calc-btn utility" onclick="pressCalculatorSymbol('+')">+</button>
+                
+                <button class="calc-btn digit" onclick="pressCalculatorNumber('1')">1</button>
+                <button class="calc-btn digit" onclick="pressCalculatorNumber('2')">2</button>
+                <button class="calc-btn digit" onclick="pressCalculatorNumber('3')">3</button>
+                <button class="calc-btn action-equal" onclick="executeCalculatorMath()">=</button>
+                
+                <button class="calc-btn digit zero-span" onclick="pressCalculatorNumber('0')">0</button>
+                <button class="calc-btn digit" onclick="pressCalculatorNumber('.')">.</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- IDENTITY 2: The Core Game Dashboard Layout -->
+    <div id="unlocked-gaming-hub" class="view-hidden">
+        <div class="app-wrapper animate__animated animate__fadeIn">
+            <header class="app-navbar">
+                <div class="logo-wrapper">
+                    <img id="nav-brand-avatar" src="" alt="" style="display:none; width:32px; height:32px; border-radius:50%; object-fit:cover; border:1px solid #ef4444;">
+                    <h1 class="logo" onclick="switchToGameCatalogView()">NEEGY<span>GAMES</span></h1>
+                </div>
+                
+                <div class="navigation-tags-row">
+                    <button class="tag-btn active" id="tab-all" onclick="filterGameCatalog('all')">All Games</button>
+                    <button class="tag-btn" id="tab-action" onclick="filterGameCatalog('action')">Action</button>
+                    <button class="tag-btn" id="tab-popular" onclick="filterGameCatalog('popular')">Popular</button>
+                    <button class="tag-btn" id="tab-io" onclick="filterGameCatalog('io')">IO</button>
+                    <button class="tag-btn variant-proxy" id="tab-unblocker" onclick="switchToProxyUnblockerView()">UNBL0CK3R</button>
+                    <button class="tag-btn variant-random" onclick="launchRandomGame()">🎲 Random</button>
+                </div>
+
+                <div class="header-right-controls">
+                    <div class="search-box-wrapper" id="navbar-search-container">
+                        <input type="text" id="game-search-input" placeholder="Search Games..." onkeyup="executeLiveGameSearch()">
+                    </div>
+                    <button class="settings-gear-btn" onclick="toggleSettingsDashboardPanel()">⚙️</button>
+                </div>
+            </header>
+
+            <!-- Floating Configuration HUD Settings Menu Panel -->
+            <div id="hud-settings-panel" class="settings-panel-hidden animate__animated animate__fadeInRight">
+                <div class="settings-panel-header">
+                    <h3>Dashboard Engine Hub</h3>
+                    <button class="close-settings-btn" onclick="toggleSettingsDashboardPanel()">✕</button>
+                </div>
+                
+                <div class="settings-group">
+                    <label>Mouse Tracing Canvas Background</label>
+                    <select id="canvas-effect-routing" onchange="adjustActiveMouseTrackingEffect()">
+                        <option value="neon">Neon Spark Trail</option>
+                        <option value="explosion">Particle Explosion Follower</option>
+                        <option value="wave">Fluid Wave Mesh</option>
+                        <option value="none">Disabled (Solid Layout)</option>
+                    </select>
+                </div>
+
+                <!-- Floating Wavy Physics Effect Toggle -->
+                <div class="settings-group">
+                    <label>Floating Wavy Mesh Physics</label>
+                    <select id="wavy-effect-routing" onchange="toggleWavyPhysicsEffect()">
+                        <option value="on">Fluid Floating (Slow Wavy)</option>
+                        <option value="off">Static Mesh (Turn Off)</option>
+                    </select>
+                </div>
+
+                <div class="settings-group">
+                    <label>Base Layer Background Chroma</label>
+                    <div class="color-picker-row">
+                        <button class="color-palette-dot dot-default active" onclick="reassignCorePlatformChroma('#000000', '#ef4444')"></button>
+                        <button class="color-palette-dot dot-cyber" onclick="reassignCorePlatformChroma('#09021a', '#06b6d4')"></button>
+                        <button class="color-palette-dot dot-slate" onclick="reassignCorePlatformChroma('#0f172a', '#6366f1')"></button>
+                        <button class="color-palette-dot dot-abyss" onclick="reassignCorePlatformChroma('#020617', '#a855f7')"></button>
+                    </div>
+                </div>
+
+                <button class="panic-lock-btn" onclick="engageInstantPanicCalculatorLock()">🔒 Emergency Relock</button>
+            </div>
+
+            <div class="promotion-banner-card animate__animated animate__pulse animate__infinite" id="promo-banner-node">
+                <div class="banner-badge">🗳️</div>
+                <div class="banner-text">
+                    <strong>Vote Next Games</strong>
+                    <span>3d 8h left - pick 5, top 4 get added</span>
+                </div>
+                <button class="banner-cta-btn">Vote now</button>
+            </div>
+
+            <main class="games-viewport">
+                <div id="game-catalog-view-panel" class="view-visible">
+                    <h2 class="view-heading" id="catalog-title-header">All Games</h2>
+                    <div class="games-layout-grid" id="catalog-grid-mount"></div>
+                </div>
+
+                <div id="stealth-unblocker-view-panel" class="view-hidden animate__animated animate__fadeIn">
+                    <div class="unblocker-control-panel">
+                        <h2>Advanced Stealth Web UNBL0CK3R</h2>
+                        <p class="panel-description">Bypasses school internet filter network blocks by routing requested pages through an encrypted cloud proxy mirror web engine link.</p>
+                        <div class="proxy-input-row">
+                            <input type="text" id="proxy-target-url" placeholder="Enter blocked website URL address..." onkeyup="evaluateProxyInputTrigger(event)">
+                            <button class="proxy-action-btn" onclick="executeStealthProxyTunnel()">Launch Unblocked Page</button>
+                        </div>
+                    </div>
+                    <div class="proxy-frame-wrapper">
+                        <iframe id="proxy-browser-sandbox" src="about:blank" allow="autoplay; encrypted-media; fullscreen" frameborder="0"></iframe>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Persistent Game Play Modal Layer -->
+    <div id="game-player-modal" class="modal-hidden" onclick="closeActiveGameSession()">
+        <div class="modal-content-card" onclick="event.stopPropagation()">
+            <button class="modal-close-btn" onclick="closeActiveGameSession()">✕ Close Game</button>
+            <iframe id="game-frame-target" src="" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
