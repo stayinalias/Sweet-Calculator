@@ -11,6 +11,9 @@
 </head>
 <body>
 
+    <!-- Notification Toast Layer for Passcode Validation -->
+    <div id="passcode-toast-notification" class="toast-hidden"></div>
+
     <!-- Dynamic Mouse Tracking Canvas Layer -->
     <canvas id="bg-particle-canvas"></canvas>
     <div class="custom-theme-overlay-solid" id="theme-color-backdrop"></div>
@@ -42,10 +45,12 @@
                 <button class="calc-btn digit" onclick="pressCalculatorNumber('1')">1</button>
                 <button class="calc-btn digit" onclick="pressCalculatorNumber('2')">2</button>
                 <button class="calc-btn digit" onclick="pressCalculatorNumber('3')">3</button>
-                <button class="calc-btn action-equal" onclick="executeCalculatorMath()">=</button>
+                <button class="calc-btn utility" onclick="executeCalculatorMath()">=</button>
                 
-                <button class="calc-btn digit zero-span" onclick="pressCalculatorNumber('0')">0</button>
+                <button class="calc-btn digit" onclick="pressCalculatorNumber('0')">0</button>
                 <button class="calc-btn digit" onclick="pressCalculatorNumber('.')">.</button>
+                <!-- Dedicated Custom Enter Key for Passcode Handshakes -->
+                <button class="calc-btn action-enter-key zero-span" onclick="submitPasscodeVerification()">ENT</button>
             </div>
         </div>
     </div>
@@ -76,13 +81,11 @@
                 </div>
             </header>
 
-            <!-- Floating Configuration HUD Settings Menu Panel -->
             <div id="hud-settings-panel" class="settings-panel-hidden animate__animated animate__fadeInRight">
                 <div class="settings-panel-header">
                     <h3>Dashboard Engine Hub</h3>
                     <button class="close-settings-btn" onclick="toggleSettingsDashboardPanel()">✕</button>
                 </div>
-                
                 <div class="settings-group">
                     <label>Mouse Tracing Canvas Background</label>
                     <select id="canvas-effect-routing" onchange="adjustActiveMouseTrackingEffect()">
@@ -92,8 +95,6 @@
                         <option value="none">Disabled (Solid Layout)</option>
                     </select>
                 </div>
-
-                <!-- Floating Wavy Physics Effect Toggle -->
                 <div class="settings-group">
                     <label>Floating Wavy Mesh Physics</label>
                     <select id="wavy-effect-routing" onchange="toggleWavyPhysicsEffect()">
@@ -101,7 +102,6 @@
                         <option value="off">Static Mesh (Turn Off)</option>
                     </select>
                 </div>
-
                 <div class="settings-group">
                     <label>Base Layer Background Chroma</label>
                     <div class="color-picker-row">
@@ -111,7 +111,6 @@
                         <button class="color-palette-dot dot-abyss" onclick="reassignCorePlatformChroma('#020617', '#a855f7')"></button>
                     </div>
                 </div>
-
                 <button class="panic-lock-btn" onclick="engageInstantPanicCalculatorLock()">🔒 Emergency Relock</button>
             </div>
 
@@ -129,7 +128,6 @@
                     <h2 class="view-heading" id="catalog-title-header">All Games</h2>
                     <div class="games-layout-grid" id="catalog-grid-mount"></div>
                 </div>
-
                 <div id="stealth-unblocker-view-panel" class="view-hidden animate__animated animate__fadeIn">
                     <div class="unblocker-control-panel">
                         <h2>Advanced Stealth Web UNBL0CK3R</h2>
