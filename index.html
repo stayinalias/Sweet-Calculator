@@ -11,14 +11,13 @@
 </head>
 <body>
 
-    <!-- Notification Toast Layer for Passcode Validation -->
+    <!-- Pop-up Toast Layer -->
     <div id="passcode-toast-notification" class="toast-hidden"></div>
 
-    <!-- Dynamic Mouse Tracking Canvas Layer -->
     <canvas id="bg-particle-canvas"></canvas>
     <div class="custom-theme-overlay-solid" id="theme-color-backdrop"></div>
 
-    <!-- IDENTITY 1: Stealth Calculator Mask Overlay (Active by default) -->
+    <!-- IDENTITY 1: Stealth Calculator Mask Overlay -->
     <div id="stealth-calculator-mask" class="calculator-overlay-visible">
         <div class="calculator-chassis animate__animated animate__fadeIn">
             <div class="calculator-screen">
@@ -123,36 +122,34 @@
                 <button class="banner-cta-btn">Vote now</button>
             </div>
 
+            <!-- Content Area Layout Layers -->
             <main class="games-viewport">
+                <!-- VIEW 1: Game Catalog Section -->
                 <div id="game-catalog-view-panel" class="view-visible">
                     <h2 class="view-heading" id="catalog-title-header">All Games</h2>
                     <div class="games-layout-grid" id="catalog-grid-mount"></div>
                 </div>
-                <div id="stealth-unblocker-view-panel" class="view-hidden animate__animated animate__fadeIn">
-                    <div class="unblocker-control-panel">
-                        <h2>Advanced Stealth Web UNBL0CK3R</h2>
-                        <p class="panel-description">Bypasses school internet filter network blocks by routing requested pages through an encrypted cloud proxy mirror web engine link.</p>
-                        <div class="proxy-input-row">
-                            <input type="text" id="proxy-target-url" placeholder="Enter blocked website URL address..." onkeyup="evaluateProxyInputTrigger(event)">
-                            <button class="proxy-action-btn" onclick="executeStealthProxyTunnel()">Launch Unblocked Page</button>
-                        </div>
+
+                <!-- VIEW 2: Fullscreen Inline Embedded Game Screen -->
+                <div id="inline-fullscreen-game-container" class="view-hidden animate__animated animate__fadeIn">
+                    <div class="frame-control-strip">
+                        <h3 id="active-playing-game-title">Running Game Engine</h3>
+                        <button class="frame-exit-btn" onclick="unloadActiveGameSession()">✕ Exit Game</button>
                     </div>
-                    <div class="proxy-frame-wrapper">
-                        <iframe id="proxy-browser-sandbox" src="about:blank" allow="autoplay; encrypted-media; fullscreen" frameborder="0"></iframe>
+                    <div class="embedded-page-canvas">
+                        <iframe id="inline-game-frame-target" src="about:blank" allow="autoplay; encrypted-media; fullscreen" frameborder="0"></iframe>
                     </div>
                 </div>
-            </main>
-        </div>
-    </div>
 
-    <!-- Persistent Game Play Modal Layer -->
-    <div id="game-player-modal" class="modal-hidden" onclick="closeActiveGameSession()">
-        <div class="modal-content-card" onclick="event.stopPropagation()">
-            <button class="modal-close-btn" onclick="closeActiveGameSession()">✕ Close Game</button>
-            <iframe id="game-frame-target" src="" frameborder="0" allowfullscreen></iframe>
-        </div>
-    </div>
-
-    <script src="app.js"></script>
-</body>
-</html>
+                <!-- VIEW 3: Offline Sandbox App Tool Hub (The UNBL0CK3R Tab) -->
+                <div id="stealth-unblocker-view-panel" class="view-hidden animate__animated animate__fadeIn">
+                    <div class="unblocker-control-panel">
+                        <h2>Stealth Offline App UNBL0CK3R Hub</h2>
+                        <p class="panel-description">Bypasses school internet filter network blocks by running utility applications entirely inside local offline browser memory states.</p>
+                        
+                        <div class="app-hub-selection-grid">
+                            <button class="app-hub-card" onclick="launchOfflineUtilityApp('notepad')">
+                                <div class="app-icon">📝</div>
+                                <h4>Stealth Note Scratchpad</h4>
+                            </button>
+                            <button class="app-hub-card" onclick="launchOfflineUtilityApp('canvas')">🎨 Retro Draw Paintboard,🌐 Static Frame Viewer ,Utility App Window,✕ Close App
