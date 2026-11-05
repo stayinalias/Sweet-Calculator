@@ -18,7 +18,7 @@
     <canvas id="bg-particle-canvas"></canvas>
     <div class="custom-theme-overlay-solid" id="theme-color-backdrop"></div>
 
-    <!-- IDENTITY 1: Stealth Calculator Mask Overlay -->
+    <!-- IDENTITY 1: Stealth Calculator Mask Overlay (Active by default) -->
     <div id="stealth-calculator-mask" class="calculator-overlay-visible">
         <div class="calculator-chassis animate__animated animate__fadeIn">
             <div class="calculator-screen">
@@ -49,7 +49,6 @@
                 
                 <button class="calc-btn digit" onclick="pressCalculatorNumber('0')">0</button>
                 <button class="calc-btn digit" onclick="pressCalculatorNumber('.')">.</button>
-                <!-- Dedicated Custom Enter Key for Passcode Handshakes -->
                 <button class="calc-btn action-enter-key zero-span" onclick="submitPasscodeVerification()">ENT</button>
             </div>
         </div>
@@ -57,7 +56,7 @@
 
     <!-- IDENTITY 2: The Core Game Dashboard Layout -->
     <div id="unlocked-gaming-hub" class="view-hidden">
-        <div class="app-wrapper animate__animated animate__fadeIn">
+        <div class="app-wrapper">
             <header class="app-navbar">
                 <div class="logo-wrapper">
                     <img id="nav-brand-avatar" src="" alt="" style="display:none; width:32px; height:32px; border-radius:50%; object-fit:cover; border:1px solid #ef4444;">
@@ -81,6 +80,7 @@
                 </div>
             </header>
 
+            <!-- Floating Settings Menu Panel -->
             <div id="hud-settings-panel" class="settings-panel-hidden animate__animated animate__fadeInRight">
                 <div class="settings-panel-header">
                     <h3>Dashboard Engine Hub</h3>
