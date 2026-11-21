@@ -1,92 +1,123 @@
-/* Basic reset */
-* { box-sizing:border-box; margin:0; padding:0; }
-body { font-family: Arial, Helvetica, sans-serif; background:#111; color:#eee; display:flex; flex-direction:column; align-items:center; min-height:100vh; }
+/* -------------------------------------------------------------
+ * app.js – Calculator logic + game unlock
+ * ------------------------------------------------------------- */
+const calcOutput = document.getElementById('calc-output');
+const cdBtn = document.getElementById('cd-btn');
+const gameSection = document.getElementById('games');
+const gameList = document.getElementById('game-list');
+const numButtons = document.querySelectorAll('.num');
+const opButtons = document.querySelectorAll('.op');
+const eqButton = document.querySelector('.eq');
+const delButton = document.querySelector('.del');
 
-/* Mouse‑tracing background */
-body::before {
-  content:"";
-  position:fixed;
-  top:0; left:0; width:100%; height:100%;
-  background-size:cover;
-  background-image:url('assets/bg1.jpg');
-  opacity:0.1;
-  z-index:-1;
-  pointer-events:none;
+let currentExpression = '';
+let isUnlocked = false;
+
+// ---------- Calculator helpers ----------
+function updateDisplay(val) {
+  calcOutput.value = val;
 }
 
-/* Color‑changing border effect */
-@keyframes rainbow {
-  0%   { border-color:#ff0080; }
-  20%  { border-color:#ff8c00; }
-  40%  { border-color:#00ff66; }
-  60%  { border-color:#0000ff; }
-  80%  { border-color:#ff00ff; }
-  100% { border-color:#ff0080; }
-}
-
-#calculator {
-  width:320px;
-  border:2px solid #ff0080;
-  border-radius:10px;
-  animation:rainbow 6s linear infinite;
-  margin-top:50px;
-  background:#222;
-  padding:10px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.5);
-}
-
-#display {
-  margin-bottom:10px;
-  text-align:right;
-}
-
-#calc-output {
-  width:100%;
-  height:40px;
-  background:#333;
-  border:none;
-  color:#fff;
-  font-size:1.5rem;
-  padding:5px 10px;
-}
-
-.keys { display:grid; grid-template-columns:repeat(4,1fr); gap:5px; }
-
-button { padding:15px; font-size:1.2rem; border:none; border-radius:5px; cursor:pointer; background:#444; color:#fff; transition:background .2s; }
-button:hover { background:#555; }
-button.special { grid-column:1 / -1; background:#0080ff; }
-button.special:hover { background:#0040ff; }
-
-.hidden { display:none; }
-
-
-* Rainbow border – subtle rainbow transition.
-* Mouse‑tracing – a light background image that can be swapped automatically with a JS loop if you want more dynamic tracing.
-* Responsive – works on most screen sizes; just keep the width at 320px.
-
----
-
-## 4. games.json
-
-[
-  {
-    "title":"Lucky Block Battle Grounds",
-    "link":"https://www.roblox.com/games/662417684/LUCKY-BLOCKS-Battlegrounds",
-    "image":"assets/lucky.png"
-  },
-  {
-    "title":"Natural Disaster Survival",
-    "link":"https://www.roblox.com/games/189707/Natural-Disaster-Survival",
-    "image":"assets/disaster.png"
-  },
-  {
-    "title":"Mining Simulator",
-    "link":"https://www.roblox.com/games/1417427737/Mining-Simulator",
-    "image":"assets/mining.png"
-  },
-  {
-    "title":"Survive and Kill the Killers in Area 51!",
-    "link":"https://www.roblox.com/games/155382109/Survive-and-Kill-the-Killers-in-Area-51",
-    "image":"assets/area51.png"
+numButtons.forEach(btn => btn.addEventListener('click', () => {
+  if (!isUnlocked) {
+    currentExpression += btn.textContent;
+    updateDisplay(currentExpression);
   }
-]
+}));
+
+opButtons.forEach(btn => btn.addEventListener('click', () => {
+  if (!isUnlocked) {
+    currentExpression += btn.textContent;
+    updateDisplay(currentExpression);
+  }
+}));
+
+eqButton.addEventListener('click', () => {
+  if (!isUnlocked) {
+    try {
+      const res = eval(currentExpression);
+      updateDisplay(res);
+      currentExpression = res.toString();
+    } catch {
+      updateDisplay('Error');
+      currentExpression = '';
+    }
+  }
+});
+
+delButton.addEventListener('click', () => {
+  if (!isUnlocked) {
+    currentExpression = currentExpression.slice(0, -1);
+    updateDisplay(currentExpression);
+  }
+});
+
+// ---------- CD button unlock ----------
+cdBtn.addEventListener('click', () => {
+  if (isUnlocked) return; // Already unlocked
+
+  // Ask user for code
+  const code = prompt('Enter the secret code:');
+  if (code === null) return; // Cancelled
+
+  if (code.trim() === '9999') {
+    unlockGames();
+  } else {
+    alert('Incorrect code. Try again.');
+  }
+});
+
+function unlockGames() {
+  isUnlocked = true;
+  // Show game list
+  gameSection.classList.remove('hidden');
+  // Load games from JSON
+  fetch('games.json')
+    .then(r => r.json())
+    .then(games => {
+      gameList.innerHTML = ''; // clear
+      games.forEach(g => {
+        const li = document.createElement('li');
+        li.style.marginBottom = '12px';
+
+        // Image preview (fallback if missing)
+        if (g.image) {
+          const img = document.createElement('img');
+          img.src = g.image;
+          img.alt = g.title;
+          img.style.width = '60px';
+          img.style.verticalAlign = 'middle';
+          img.style.marginRight = '8px';
+          li.appendChild(img);
+        }
+
+        const link = document.createElement('a');
+        link.href = g.link;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = g.title;
+        link.style.fontSize = '1.1rem';
+        link.style.color = '#0af';
+
+        li.appendChild(link);
+        gameList.appendChild(li);
+      });
+    })
+    .catch(err => console.error('Could not load games:', err));
+}
+
+/* ---------- Optional: Random AI names for multiplayer games ----------
+ *  If you want to display AI opponents, you can call this function:
+ *  generateGamertag() → returns a random name
+ * ------------------------------------------------------------------- */
+const firstNames = ['Ace', 'Nova', 'Pixel', 'Jazzy', 'Slick', 'Zelda', 'Milo', 'Nora', 'Rex', 'Luna'];
+const lastNames = ['Blaze', 'Storm', 'Shadow', 'Knight', 'Rogue', 'Phoenix', 'Spark', 'Dash', 'Glitch', 'Vortex'];
+
+function generateGamertag() {
+  const first = firstNames[Math.floor(Math.random() * firstNames.length)];
+  const last = lastNames[Math.floor(Math.random() * lastNames.length)];
+  return ${first}${last};
+}
+
+// Example usage (you can inject this into your game UI if needed)
+// console.log(generateGamertag()); // e.g., "NovaRogue"
